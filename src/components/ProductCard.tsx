@@ -38,9 +38,12 @@ export function ProductCard({
       <CardContent className="flex-grow">
         <p className="line-clamp-4">{description}</p>
       </CardContent>
-      <CardFooter>
+      <CardFooter className=" gap-6">
         <Button asChild size="lg" className="w-full">
           <Link href={`/products/${id}/purchase`}>Purchase</Link>
+        </Button>
+        <Button variant={"ghost"} asChild size="sm" className="w-full">
+          <Link href={`/products/${id}`}>Description</Link>
         </Button>
       </CardFooter>
     </Card>
