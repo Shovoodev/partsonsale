@@ -16,8 +16,13 @@ import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
+  DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@radix-ui/react-dropdown-menu";
+import {
+  ActiveDropDownTroggleMenu,
+  DeleteDropdownItem,
+} from "./_components/ProductAction";
 
 export default function AdminProductPage() {
   return (
@@ -63,38 +68,46 @@ async function ProductTable() {
       </TableHeader>
       <TableBody>
         {products.map((product) => (
-          <>
-            <TableRow key={product.id}>
-              <TableCell>
-                {product.isAvailableForPurchase ? <CheckCircle /> : <XCircle />}
-              </TableCell>
-              <TableCell>{product.name}</TableCell>
-              <TableCell>{formatCurrency(product.priceInCents)}</TableCell>
-              <TableCell>{formatNumber(product._count.orders)}</TableCell>
-              <TableCell>
-                <DropdownMenu>
-                  <DropdownMenuTrigger>
-                    <MoreVertical />
-                  </DropdownMenuTrigger>
-                  <DropdownMenuContent>
-                    <DropdownMenuItem asChild>
-                      <a
-                        download
-                        href={`/admin/products/${product.id}/download`}
-                      >
-                        Download
-                      </a>
-                    </DropdownMenuItem>
-                    <DropdownMenuItem asChild>
-                      <Link href={`/admin/products/${product.id}/edit`}>
-                        Edit
-                      </Link>
-                    </DropdownMenuItem>
-                  </DropdownMenuContent>
-                </DropdownMenu>
-              </TableCell>
-            </TableRow>
-          </>
+          <TableRow key={product.id}>
+            <TableCell>
+              {product.isAvailableForPurchase ? (
+                <CheckCircle />
+              ) : (
+                <XCircle className=" stroke-orange-900" />
+              )}
+            </TableCell>
+            <TableCell>{product.name}</TableCell>
+            <TableCell>{formatCurrency(product.priceInCents)}</TableCell>
+            <TableCell>{formatNumber(product._count.orders)}</TableCell>
+            <TableCell>
+              <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                  <MoreVertical />
+                </DropdownMenuTrigger>
+                <DropdownMenuContent className="w-56 bg-slate-400 p-2 rounded-md text-black">
+                  <DropdownMenuItem asChild>
+                    <a download href={`/admin/products/${product.id}/download`}>
+                      Download
+                    </a>
+                  </DropdownMenuItem>
+                  <DropdownMenuItem>
+                    <Link href={`/admin/products/${product.id}/edit`}>
+                      Edit
+                    </Link>
+                  </DropdownMenuItem>
+                  <ActiveDropDownTroggleMenu
+                    id={product.id}
+                    isAvailableForPurchase={product.isAvailableForPurchase}
+                  />
+                  <DropdownMenuSeparator />
+                  <DeleteDropdownItem
+                    id={product.id}
+                    disabled={product._count.orders > 0}
+                  />
+                </DropdownMenuContent>
+              </DropdownMenu>
+            </TableCell>
+          </TableRow>
         ))}
       </TableBody>
     </Table>

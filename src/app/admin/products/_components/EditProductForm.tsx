@@ -7,7 +7,9 @@ import { Textarea } from "@/components/ui/textarea";
 import { formatCurrency } from "@/lib/formatters";
 import React, { useActionState, useState } from "react";
 import { useFormStatus } from "react-dom";
-import { addProduct } from "../../_actions/Products";
+import { addProduct, updateProduct } from "../../_actions/Products";
+import { Product } from "@prisma/client";
+import Image from "next/image";
 
 export interface FormError {
   name?: string;
@@ -17,16 +19,29 @@ export interface FormError {
   image?: string;
 }
 
-const ProductForm = () => {
-  const [error, action] = useActionState(addProduct, {});
-  const [priceInCents, setPriceInCents] = useState<number | undefined>(0);
+const EditProductForm = ({ product }: { product?: Product | null }) => {
+  const [error, action] = useActionState(
+    product === null
+      ? addProduct
+      : updateProduct.bind(null, product?.id as string),
+    {}
+  );
+  const [priceInCents, setPriceInCents] = useState<number | undefined>(
+    product?.priceInCents
+  );
   console.log(error);
 
   return (
     <form action={action} className="space-y-8 ml-9">
       <div className="space-y-2">
         <Label htmlFor="name">Name</Label>
-        <Input type="text" id="name" name="name" required />
+        <Input
+          type="text"
+          id="name"
+          name="name"
+          defaultValue={product?.name || ""}
+          required
+        />
       </div>
 
       <div className="space-y-2">
@@ -48,25 +63,38 @@ const ProductForm = () => {
 
       <div>
         <Label htmlFor="description">Description</Label>
-        <Textarea id="description" name="description" />
+        <Textarea
+          id="description"
+          name="description"
+          defaultValue={product?.description}
+        />
       </div>
 
       <div className="space-y-2">
         <Label htmlFor="file">File</Label>
         <Input type="file" id="file" name="file" />
       </div>
-
+      {product != null && (
+        <div className="text-muted-foreground">{product.filePath}</div>
+      )}
       <div className="space-y-2">
         <Label htmlFor="image">Image</Label>
         <Input type="file" id="image" name="image" />
       </div>
-
+      {product != null && (
+        <Image
+          src={"/product.jpeg"}
+          height="400"
+          width="400"
+          alt="Product Image"
+        />
+      )}
       <SubmitButton />
     </form>
   );
 };
 
-export default ProductForm;
+export default EditProductForm;
 
 function SubmitButton() {
   const { pending } = useFormStatus();
